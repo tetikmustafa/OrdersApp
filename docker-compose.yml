@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - 8090:8090
+        depends_on:
+            mysqldb:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/orders_app
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=12345
+        networks:
+            - springboot-mysql-network
+    mysqldb:
+        image: mysql:latest
+        ports:
+            - 3307:3306
+        environment:
+            - MYSQL_DATABASE=orders_app
+            - MYSQL_ROOT_PASSWORD=12345
+        volumes:
+            - mysql-data:/var/lib/mysql
+        networks:
+            - springboot-mysql-network
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            retries: 10
+            interval: 3s
+            timeout: 30s
+volumes:
+    mysql-data:
+networks:
+    springboot-mysql-network:
+        name: springboot-mysql-network
