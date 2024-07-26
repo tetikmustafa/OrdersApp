@@ -1,8 +1,7 @@
 package com.smartera.ordersapp.controller;
 
 import com.smartera.ordersapp.model.Product;
-import com.smartera.ordersapp.service.IService;
-import com.smartera.ordersapp.service.ProductService;
+import com.smartera.ordersapp.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,48 +10,48 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-public class ProductController implements IController<Product> {
+public class ProductController{
 
     @Autowired
-    ProductService productService;
+    ProductServiceImpl productServiceImpl;
 
     @PostMapping("products")
     public Product save(@RequestBody Product product){
-        productService.save(product);
-        return productService.findById(product.getProductId());
+        productServiceImpl.save(product);
+        return productServiceImpl.findById(product.getProductId());
     }
 
     @GetMapping("products/{productId}")
     public Product findById(@PathVariable int productId){
-        return productService.findById(productId);
+        return productServiceImpl.findById(productId);
     }
 
     @GetMapping("products")
     public List<Product> findAll(){
-        return productService.findAll();
+        return productServiceImpl.findAll();
     }
 
     @GetMapping("products/keyword/{keyword}")
     public List<Product> findByKeyword(@PathVariable String keyword){
-        return productService.findByKeyword(keyword);
+        return productServiceImpl.findByKeyword(keyword);
     }
 
     @PutMapping("products/{productId}")
     public Product update(@RequestBody Product product,@PathVariable int productId){
         product.setProductId(productId);
-        productService.update(product);
-        return productService.findById(productId);
+        productServiceImpl.update(product);
+        return productServiceImpl.findById(productId);
     }
 
     @DeleteMapping("products/{productId}")
     public String deleteById(@PathVariable int productId){
-        productService.deleteById(productId);
+        productServiceImpl.deleteById(productId);
         return "Product with id " + productId + " has been deleted";
     }
 
     @DeleteMapping("products")
     public String deleteAll(){
-        productService.deleteAll();
+        productServiceImpl.deleteAll();
         return "All products have been deleted";
     }
 }
