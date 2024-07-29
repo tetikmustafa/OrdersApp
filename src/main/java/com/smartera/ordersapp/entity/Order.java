@@ -1,4 +1,4 @@
-package com.smartera.ordersapp.model;
+package com.smartera.ordersapp.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @Data
@@ -15,11 +16,11 @@ import java.util.List;
 @Entity
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderId;
-    private int orderCustomerId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID orderId;
+    private UUID orderCustomerId;
     private String orderName;
     private String orderDescription;
     @ElementCollection
-    private List<Integer> orderProductsIds;
+    private List<UUID> orderProductsIds;
 }

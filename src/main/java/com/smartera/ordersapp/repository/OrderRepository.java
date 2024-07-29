@@ -1,17 +1,18 @@
 package com.smartera.ordersapp.repository;
 
-import com.smartera.ordersapp.model.Order;
+import com.smartera.ordersapp.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Integer> {
+public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    List<Order> findByOrderCustomerId(int customerId);
+    List<Order> findByOrderCustomerId(UUID customerId);
 
-    List<Order> findByOrderCustomerIdAndOrderDescriptionContaining(int customerId, String keyword);
+    List<Order> findByOrderCustomerIdAndOrderDescriptionContaining(UUID customerId, String keyword);
 
     List<Order> findByOrderNameContainingOrOrderDescriptionContaining(String keyword, String keyword1);
 }

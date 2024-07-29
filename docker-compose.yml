@@ -31,6 +31,13 @@ services:
             retries: 20
             interval: 3s
             timeout: 30s
+        command: >
+            sh -c '
+            if [ -e /backup/mysql-data-backup.tar.gz ]; then
+              tar xzf /backup/mysql-data-backup.tar.gz -C /var/lib/mysql;
+            fi;
+            exec docker-entrypoint.sh mysqld;
+            '
 volumes:
     mysql-data:
 networks:

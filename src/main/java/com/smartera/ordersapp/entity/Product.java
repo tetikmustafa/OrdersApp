@@ -1,4 +1,4 @@
-package com.smartera.ordersapp.model;
+package com.smartera.ordersapp.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @Data
 @NoArgsConstructor
@@ -16,8 +18,8 @@ import org.springframework.stereotype.Component;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int productId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID productId;
     private String productName;
     private String productDescription;
     private double productPrice;

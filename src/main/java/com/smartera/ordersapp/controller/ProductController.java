@@ -1,57 +1,68 @@
 package com.smartera.ordersapp.controller;
 
-import com.smartera.ordersapp.model.Product;
-import com.smartera.ordersapp.service.impl.ProductServiceImpl;
+import com.smartera.ordersapp.dto.product.ProductCreateDto;
+import com.smartera.ordersapp.dto.product.ProductDto;
+import com.smartera.ordersapp.dto.product.ProductIdDto;
+import com.smartera.ordersapp.entity.Product;
+import com.smartera.ordersapp.mapper.ProductMapper;
+import com.smartera.ordersapp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("products")
 public class ProductController{
 
     @Autowired
-    ProductServiceImpl productServiceImpl;
+    ProductService productService;
 
-    @PostMapping("products")
-    public Product save(@RequestBody Product product){
-        productServiceImpl.save(product);
-        return productServiceImpl.findById(product.getProductId());
+    @PostMapping()
+    public ProductIdDto save(@RequestBody ProductCreateDto productDto){
+        Product product = ProductMapper.toProduct(productDto);
+        productService.save(product);
+        return ProductMapper.toProductIdDto(product);
     }
 
-    @GetMapping("products/{productId}")
-    public Product findById(@PathVariable int productId){
-        return productServiceImpl.findById(productId);
+    @GetMapping("/{productId}")
+    public ProductDto findById(@PathVariable UUID productId){
+        Product product = productService.findById(productId);
+        return ProductMapper.toProductDto(product);
     }
 
-    @GetMapping("products")
-    public List<Product> findAll(){
-        return productServiceImpl.findAll();
+    @GetMapping()
+    public List<ProductDto> findAll(){
+        return productService.findAll()
+                .stream().map(ProductMapper::toProductDto).toList();
     }
 
-    @GetMapping("products/keyword/{keyword}")
-    public List<Product> findByKeyword(@PathVariable String keyword){
-        return productServiceImpl.findByKeyword(keyword);
+    @GetMapping("/keyword/{keyword}")
+    public List<ProductDto> findByKeyword(@PathVariable String keyword){
+        return productService.findByKeyword(keyword)
+                .stream().map(ProductMapper::toProductDto).toList();
     }
 
-    @PutMapping("products/{productId}")
-    public Product update(@RequestBody Product product,@PathVariable int productId){
+    @PutMapping("/{productId}")
+    public ProductIdDto update(@RequestBody ProductCreateDto productDto,@PathVariable UUID productId){
+        Product product = ProductMapper.toProduct(productDto);
         product.setProductId(productId);
-        productServiceImpl.update(product);
-        return productServiceImpl.findById(productId);
+        productService.update(product);
+        return ProductMapper.toProductIdDto(product);
     }
 
-    @DeleteMapping("products/{productId}")
-    public String deleteById(@PathVariable int productId){
-        productServiceImpl.deleteById(productId);
+    @DeleteMapping("/{productId}")
+    public String deleteById(@PathVariable UUID productId){
+        productService.deleteById(productId);
         return "Product with id " + productId + " has been deleted";
     }
 
-    @DeleteMapping("products")
+    @DeleteMapping()
     public String deleteAll(){
-        productServiceImpl.deleteAll();
+        productService.deleteAll();
         return "All products have been deleted";
     }
 }

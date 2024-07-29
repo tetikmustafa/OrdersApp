@@ -1,65 +1,75 @@
 package com.smartera.ordersapp.controller;
 
-import com.smartera.ordersapp.model.Customer;
-import com.smartera.ordersapp.service.impl.CustomerServiceImpl;
+import com.smartera.ordersapp.dto.customer.CustomerCreateDto;
+import com.smartera.ordersapp.dto.customer.CustomerDto;
+import com.smartera.ordersapp.dto.customer.CustomerIdDto;
+import com.smartera.ordersapp.entity.Customer;
+import com.smartera.ordersapp.mapper.CustomerMapper;
+import com.smartera.ordersapp.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("customers")
 public class CustomerController{
 
     @Autowired
-    CustomerServiceImpl customerServiceImpl;
+    CustomerService customerService;
 
-    @PostMapping("customers")
-    public Customer save(@RequestBody Customer customer) {
-        customerServiceImpl.save(customer);
-        return customerServiceImpl.findById(customer.getCustomerId());
+    @PostMapping()
+    public CustomerIdDto save(@RequestBody CustomerCreateDto customerCreateDto) {
+        Customer customer = CustomerMapper.toCustomer(customerCreateDto);
+        customerService.save(customer);
+        return CustomerMapper.toCustomerIdDto(customerService.findById(customer.getCustomerId()));
     }
 
 
-    @GetMapping("customers/{customerId}")
-    public Customer findById(@PathVariable int customerId) {
-        return customerServiceImpl.findById(customerId);
+    @GetMapping("/{customerId}")
+    public CustomerDto findById(@PathVariable UUID customerId) {
+        return CustomerMapper.toCustomerDto(customerService.findById(customerId));
     }
 
-    @GetMapping("customers")
-    public List<Customer> findAll() {
-        return customerServiceImpl.findAll();
+    @GetMapping()
+    public List<CustomerDto> findAll() {
+        return customerService.findAll()
+                .stream().map(CustomerMapper::toCustomerDto).toList();
     }
 
-    @GetMapping("customers/keyword/{keyword}")
-    public List<Customer> findByKeyword(@PathVariable String keyword) {
-        return customerServiceImpl.findByKeyword(keyword);
+    @GetMapping("/keyword/{keyword}")
+    public List<CustomerDto> findByKeyword(@PathVariable String keyword) {
+        return customerService.findByKeyword(keyword)
+                .stream().map(CustomerMapper::toCustomerDto).toList();
     }
 
 
-    @PutMapping("customers/{customerId}")
-    public Customer update(@RequestBody Customer customer, @PathVariable int customerId) {
+    @PutMapping("/{customerId}")
+    public CustomerIdDto update(@RequestBody CustomerCreateDto customerCreateDto, @PathVariable UUID customerId) {
+        Customer customer = CustomerMapper.toCustomer(customerCreateDto);
         customer.setCustomerId(customerId);
-        customerServiceImpl.update(customer);
-        return customerServiceImpl.findById(customer.getCustomerId());
+        customerService.update(customer);
+        return CustomerMapper.toCustomerIdDto(customerService.findById(customerId));
     }
 
 
-    @PutMapping("customers/{customerId}/authorize")
-    public String authorize(@PathVariable int customerId) {
-        customerServiceImpl.authorize(customerId);
+    @PutMapping("/{customerId}/authorize")
+    public String authorize(@PathVariable UUID customerId) {
+        customerService.authorize(customerId);
         return "Customer "+customerId+" has been authorized.";
     }
 
-    @DeleteMapping("customers/{customerId}")
-    public String deleteById(@PathVariable int customerId) {
-        customerServiceImpl.deleteById(customerId);
+    @DeleteMapping("/{customerId}")
+    public String deleteById(@PathVariable UUID customerId) {
+        customerService.deleteById(customerId);
         return "Customer with id " + customerId + " has been deleted";
     }
 
-    @DeleteMapping("customers")
+    @DeleteMapping()
     public String deleteAll() {
-        customerServiceImpl.deleteAll();
+        customerService.deleteAll();
         return "All customers have been deleted";
     }
 }

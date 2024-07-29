@@ -2,8 +2,8 @@ package com.smartera.ordersapp.service.impl;
 
 import com.smartera.ordersapp.exception.CustomerNotAuthorizedException;
 import com.smartera.ordersapp.exception.CustomerNotFoundException;
-import com.smartera.ordersapp.model.Customer;
-import com.smartera.ordersapp.model.Order;
+import com.smartera.ordersapp.entity.Customer;
+import com.smartera.ordersapp.entity.Order;
 import com.smartera.ordersapp.repository.CustomerRepository;
 import com.smartera.ordersapp.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -23,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
     }
 
-    public Customer findById(@PathVariable int customerId) {
+    public Customer findById(@PathVariable UUID customerId) {
         return  customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException(customerId));
     }
 
@@ -43,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
     }
 
-    public void deleteById(@PathVariable int customerId) {
+    public void deleteById(@PathVariable UUID customerId) {
         Optional<Customer> o = customerRepository.findById(customerId);
         if (o.isEmpty()) {
             throw new CustomerNotFoundException(customerId);
@@ -55,7 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteAll();
     }
 
-    public void authorize(int customerId) {
+    public void authorize(UUID customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();
@@ -67,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public void saveOrder(int customerId, Order order) {
+    public void saveOrder(UUID customerId, Order order) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();
@@ -79,7 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public void updateOrder(int customerId, Order order) {
+    public void updateOrder(UUID customerId, Order order) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();
@@ -92,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public void deleteOrder(int customerId) {
+    public void deleteOrder(UUID customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();
@@ -106,7 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
-    public void deleteOrder(int customerId, int orderId) {
+    public void deleteOrder(UUID customerId, UUID orderId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();
@@ -118,7 +119,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public void checkAuthorization(int customerId) {
+    public void checkAuthorization(UUID customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();

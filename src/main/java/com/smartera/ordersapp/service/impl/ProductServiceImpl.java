@@ -1,7 +1,7 @@
 package com.smartera.ordersapp.service.impl;
 
 import com.smartera.ordersapp.exception.ProductNotFoundException;
-import com.smartera.ordersapp.model.Product;
+import com.smartera.ordersapp.entity.Product;
 import com.smartera.ordersapp.repository.ProductRepository;
 import com.smartera.ordersapp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -20,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
-    public Product findById(int productId) {
+    public Product findById(UUID productId) {
         return productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
@@ -42,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    public void deleteById(int productId){
+    public void deleteById(UUID productId){
         Optional<Product> o = productRepository.findById(productId);
         if (o.isEmpty()) {
             throw new ProductNotFoundException(productId);

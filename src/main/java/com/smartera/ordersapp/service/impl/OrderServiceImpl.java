@@ -1,7 +1,7 @@
 package com.smartera.ordersapp.service.impl;
 
 import com.smartera.ordersapp.exception.OrderNotFoundException;
-import com.smartera.ordersapp.model.Order;
+import com.smartera.ordersapp.entity.Order;
 import com.smartera.ordersapp.repository.OrderRepository;
 import com.smartera.ordersapp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -18,14 +19,14 @@ public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
 
     @Autowired
-    private CustomerServiceImpl customerServiceImpl;
+    private CustomerServiceImpl customerService;
 
     public void save(Order order) {
         save(order, order.getOrderCustomerId());
 
     }
 
-    public Order findById(@PathVariable int orderId) {
+    public Order findById(@PathVariable UUID orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
@@ -42,20 +43,20 @@ public class OrderServiceImpl implements OrderService {
         if (o.isEmpty()) {
             throw new OrderNotFoundException(order.getOrderId());
         }
-        int customerId = o.get().getOrderCustomerId();
+        UUID customerId = o.get().getOrderCustomerId();
         order.setOrderCustomerId(customerId);
         orderRepository.save(order);
-        customerServiceImpl.updateOrder(customerId, order);
+        customerService.updateOrder(customerId, order);
 
     }
 
-    public void deleteById(@PathVariable int orderId) {
+    public void deleteById(@PathVariable UUID orderId) {
         Optional<Order> o = orderRepository.findById(orderId);
         if (o.isEmpty()) {
             throw new OrderNotFoundException(orderId);
         }
-        int customerId = o.get().getOrderCustomerId();
-        customerServiceImpl.deleteOrder(customerId, orderId);
+        UUID customerId = o.get().getOrderCustomerId();
+        customerService.deleteOrder(customerId, orderId);
         orderRepository.deleteById(orderId);
     }
 
@@ -63,27 +64,27 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.deleteAll();
     }
 
-    public void save(Order order, int customerId) {
-        customerServiceImpl.checkAuthorization(customerId);
+    public void save(Order order, UUID customerId) {
+        customerService.checkAuthorization(customerId);
         order.setOrderCustomerId(customerId);
         orderRepository.save(order);
-        customerServiceImpl.saveOrder(customerId, order);
+        customerService.saveOrder(customerId, order);
     }
 
-    public List<Order> findByCustomerId(int customerId) {
+    public List<Order> findByCustomerId(UUID customerId) {
         return orderRepository.findByOrderCustomerId(customerId);
     }
 
 
-    public List<Order> findByCustomerIdKeyword(int customerId, String keyword) {
+    public List<Order> findByCustomerIdKeyword(UUID customerId, String keyword) {
         return orderRepository.findByOrderCustomerIdAndOrderDescriptionContaining(customerId, keyword);
     }
 
-    public void deleteByCustomerId(int customerId) {
+    public void deleteByCustomerId(UUID customerId) {
         List<Order> orders = orderRepository.findByOrderCustomerId(customerId);
         for (Order order : orders) {
             orderRepository.deleteById(order.getOrderId());
         }
-        customerServiceImpl.deleteOrder(customerId);
+        customerService.deleteOrder(customerId);
     }
 }
